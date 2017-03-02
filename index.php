@@ -8,3 +8,7 @@
 </style>
 
 <textarea class="area_test"></textarea>
+
+<form method="post">
+	<input type="submit" value="Send">
+</form>
