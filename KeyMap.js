@@ -117,6 +117,8 @@ var KeyMap = (function(){
 				this.map[e.keyCode] = (e.type == 'keydown');
 			}
 
+			console.log(this.map);
+
 			// RESET AFTER 1s CASE EVENT keyup NOT INVOKED
 			var self = this;
 			if(['keydown','mousedown'].indexOf(e.type) != -1){
@@ -244,6 +246,10 @@ var KeyMap = (function(){
 					element : element,
 					keyMap : new keyMap(),
 					events : [],
+					options : {
+						keyboard : false,
+						mouse : false,
+					},
 				});
 				i = elements.length-1;
 			}
@@ -253,12 +259,15 @@ var KeyMap = (function(){
 
 			current.keyMap.addCombo(_keys, callback);
 
+			function action(e){
+				var check = current.keyMap.keyMapEvent(e);
+			}
+
 			// CREATE A FUNCTION IN OBJECT THAT CAN USE TO REMOVE THE LISTENER
-			var n = current.events.length+1;
-			current.events.push({
-				combo : _keys,
-				action : function(e){
-					var check = current.keyMap.keyMapEvent(e);
+			// var n = current.events.length+1;
+			// current.events.push({
+			// 	combo : _keys,
+				// action : 
 					// CHECK IF EVENT IS KEYBOARD
 					// if(typeof e.keyCode != 'undefined' && !check){
 						// NEED CHECK IF this IS THE LAST LISTENER CALLED, IF NOT THE LAST 
@@ -272,14 +281,18 @@ var KeyMap = (function(){
 						// 	}
 						// }
 					// }
-				}
-			});
-			var action = current.events[current.events.length-1].action;
+				// }
+			// });
+			// var action = current.events[current.events.length-1].action;
 
-			element.addEventListener('keydown', action);
-			element.addEventListener('keyup', action);
+			if(!current.options.keyboard){
+				current.options.keyboard = true;
+				element.addEventListener('keydown', action);
+				element.addEventListener('keyup', action);
+			}
 
-			if(hasMouseKey){
+			if(!current.options.mouse && hasMouseKey){
+				current.options.mouse = true;
 				element.addEventListener('mousedown', action);
 				element.addEventListener('mouseup', action);
 			}
@@ -303,14 +316,14 @@ var KeyMap = (function(){
 				}
 				var i = current.events.map(function(t){return t.combo.toString();}).indexOf(parser.keys.toString());
 				if(i !== -1){
-					var action = current.events[i].action;
-					element.removeEventListener('keydown', action);
-					element.removeEventListener('keyup', action);
+					// var action = current.events[i].action;
+					// element.removeEventListener('keydown', action);
+					// element.removeEventListener('keyup', action);
 
-					if(parser.hasMouseKey){
-						element.removeEventListener('mousedown', action);
-						element.removeEventListener('mouseup', action);
-					}
+					// if(parser.hasMouseKey){
+					// 	element.removeEventListener('mousedown', action);
+					// 	element.removeEventListener('mouseup', action);
+					// }
 
 					return current.keyMap.removeCombo(parser.keys);
 				}
@@ -336,6 +349,11 @@ window.onload = function(){
 	area = document.getElementsByTagName('textarea')[0];
 	form = document.getElementsByTagName('form')[0];
 
+	// area.onKeyMap(['ctrl'], function(e){
+	// 	e.preventDefault();
+	// 	alert('ctrl');
+	// });
+
 	area.onKeyMap(['ctrl', 's'], function(e){
 		e.preventDefault();
 		alert('save');
@@ -347,7 +365,7 @@ window.onload = function(){
 	// });
 
 	area.onKeyMap(['ctrl', 'b'], function(e){
-		// e.preventDefault();
+		e.preventDefault();
 		alert('favorites');
 	});
 
@@ -360,7 +378,7 @@ window.onload = function(){
 	// 	alert('ctrl+alt+mouse_2');
 	// });
 
-	document.onKeyMap('esc', function(e){
-	 alert('exit page');
-	});
+	// document.onKeyMap('esc', function(e){
+	//  alert('exit page');
+	// });
 }
