@@ -6,7 +6,7 @@ KeyMap is a keyboard/mouse event manager, it helps you to create trigger when a 
 
 ### Create Combo
 
-If you need create a combo key to textarea to save content, use :
+If you need create a combo key in a textarea to save content, use :
 
 ``` js
 // DOMElement.onKeyMap(Array|Object|Number|String, function);
@@ -97,3 +97,5 @@ KeyMap.addEvent(DOMTextArea, 53, function(){
 ## License
 
 [MIT](https://github.com/Lautert/KeyMap/blob/master/LICENSE)
+
+If you like this project and want to help, you can make a [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=5FDRXF4VLYAYS&lc=BR&item_name=Lautert&currency_code=BRL&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
