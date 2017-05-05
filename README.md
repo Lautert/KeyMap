@@ -78,7 +78,7 @@ Note 2 : This method return a boolean to check if alias create
 
 Note : Currenty not have a method to remove alias, if you need remove Default alias, you need remove in [KeyMap.js](https://github.com/Lautert/KeyMap/blob/master/KeyMap.js)
 
-Download of this project and see [index.html](https://github.com/Lautert/KeyMap/blob/master/index.html)
+Download this project and see [index.html](https://github.com/Lautert/KeyMap/blob/master/index.html)
 
 ## Bugs
 - In JS is not possibel check if a key is pressed, only can listener keyup/keydown [link](http://stackoverflow.com/questions/1828613/check-if-a-key-is-down), so after "resetKeyAfter"(5s) the key pressed is reset.
