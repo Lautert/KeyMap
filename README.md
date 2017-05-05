@@ -11,16 +11,16 @@ If you need create a combo key to textarea to save content, use :
 ``` js
 // DOMElement.onKeyMap(Array|Object|Number|String, function);
 DOMTextArea.onKeyMap(['ctrl', 's'], function(e){
-	e.preventDefault();
-	// code to save this content
-	alert('Text Save');
+    e.preventDefault();
+    // code to save this content
+    alert('Text Save');
 });
 
 // KeyMap.addEvent(DOMElement, Array|Object|Number|String, function);
 KeyMap.addEvent(DOMTextArea, ['ctrl', 's'], function(){
-	e.preventDefault();
-	// code to save this content
-	alert('Text Save');
+    e.preventDefault();
+    // code to save this content
+    alert('Text Save');
 });
 ```
 
@@ -52,27 +52,27 @@ Note 2 : This method return a boolean to check if alias create
 
 ``` js
 {
-	16  : ['shift'],
-	17  : ['control', 'ctrl'],
-	18  : ['alt'],
-	13  : ['enter'],
-	8   : ['backspace'],
-	46  : ['delete', 'del'],
-	9   : ['tab'],
-	27  : ['escape', 'esc'],
-	91  : ['os', 'super', 'window', 'windows'],
-	38  : ['arrowup', 'up'],
-	37  : ['arrowleft', 'left'],
-	39  : ['arrowright', 'right'],
-	40  : ['arrowdown', 'down'],
-	46  : ['delete'],
-	36  : ['home'],
-	33  : ['pageup'],
-	34  : ['pagedown'],
-	35  : ['end'],
-	'mouse_0' : ['mouse_0'],
-	'mouse_1' : ['mouse_1'],
-	'mouse_2' : ['mouse_2'],
+    16  : ['shift'],
+    17  : ['control', 'ctrl'],
+    18  : ['alt'],
+    13  : ['enter'],
+    8   : ['backspace'],
+    46  : ['delete', 'del'],
+    9   : ['tab'],
+    27  : ['escape', 'esc'],
+    91  : ['os', 'super', 'window', 'windows'],
+    38  : ['arrowup', 'up'],
+    37  : ['arrowleft', 'left'],
+    39  : ['arrowright', 'right'],
+    40  : ['arrowdown', 'down'],
+    46  : ['delete'],
+    36  : ['home'],
+    33  : ['pageup'],
+    34  : ['pagedown'],
+    35  : ['end'],
+    'mouse_0' : ['mouse_0'],
+    'mouse_1' : ['mouse_1'],
+    'mouse_2' : ['mouse_2'],
 }
 ```
 
@@ -85,11 +85,11 @@ Download of this project and see [index.html](https://github.com/Lautert/KeyMap/
 
 ``` js
 KeyMap.addEvent(DOMTextArea, 'five', function(){
-	alert('Number FIVE');
+    alert('Number FIVE');
 });
 
 KeyMap.addEvent(DOMTextArea, 53, function(){
-	alert('Number FIVE not override');
+    alert('Number FIVE not override');
 });
 ```
 - In this code is create two triggers, but the second event is not called because when he check keys pressed 'five' is alias to 53 so he call first occurrence there.
