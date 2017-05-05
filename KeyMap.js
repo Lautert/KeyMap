@@ -1,17 +1,16 @@
 /*
  * @name            KeyMap
  * @namespace       KeyMap
- * @version         0.1.5
- * @description     A simple class to call a callback when combo key are pressed on element
+ * @version         1.0.0
+ * @description     A simple class to trigger a callback when combo key are pressed on element
  * @author          Guilherme Lautert (lautert250@gmail.com)
  *
  * @license         MIT (https://github.com/Lautert/KeyMap/blob/master/LICENSE)
  */
-
 var KeyMap = (function(){
 
-	var resetKeyAfter = 1; // second
-	var resetCallAfter = 1; // second
+	var resetKeyAfter = 5; // second
+	var resetCallAfter = .01; // second
 
 	var alias = {
 		16  : ['shift'],
@@ -22,7 +21,7 @@ var KeyMap = (function(){
 		46  : ['delete', 'del'],
 		9   : ['tab'],
 		27  : ['escape', 'esc'],
-		91  : ['os', 'super', 'window', 'windows', 'iniciar'],
+		91  : ['os', 'super', 'window', 'windows'],
 		38  : ['arrowup', 'up'],
 		37  : ['arrowleft', 'left'],
 		39  : ['arrowright', 'right'],
@@ -52,10 +51,11 @@ var KeyMap = (function(){
 	function keyMap(){
 		this.onComboKey = [];
 		this.map = {};
-		this.doAction = false;
 	};
 
 	keyMap.prototype = {
+		// CHECK IF _keys ARE MAPPING AND true
+		// THIS METHOD CHECK ONLY FINAL keys NOT ALIAS
 		checkCombo : function(_keys){
 			var _return = true;
 			if(Array.isArray(_keys)){
@@ -109,29 +109,31 @@ var KeyMap = (function(){
 			}
 			return false;
 		},
+		// THIS EVENT CAN BE CALLED FROM mouse AND key
 		keyMapEvent : function(e){
 
+			var key = null;
+
 			if(typeof e.keyCode == 'undefined'){
-				this.map['mouse_'+e.button] = (e.type == 'mousedown');
+				key = 'mouse_'+e.button;
 			}else{
-				this.map[e.keyCode] = (e.type == 'keydown');
+				key = e.keyCode;
 			}
 
-			console.log(this.map);
+			this.map[key] = (['mousedown','keydown'].indexOf(e.type) != -1);
 
-			// RESET AFTER 1s CASE EVENT keyup NOT INVOKED
+			// RESET AFTER "resetKeyAfter" CASE EVENT keyup NOT INVOKED
+			// HAVE MANY REASONS TO DON'T DO IT, example : alert, open console, breakpoint
 			var self = this;
 			if(['keydown','mousedown'].indexOf(e.type) != -1){
-				setTimeout(function(){
-					if(typeof e.keyCode == 'undefined'){
-						self.map['mouse_'+e.button] = false;
-					}else{
-						self.map[e.keyCode] = false;
-					}
-				},resetKeyAfter*1000);
+				// IF THERE WAS ANOTHER REMOVE AND CREATE AGAIN
+				clearTimeout(self.map[key].timeout);
+				self.map[key].timeout = setTimeout(function(){
+					self.map[key] = false;
+				}, resetKeyAfter*1000);
 			}
 
-			// GET TOTAL KEYS DOWN
+			// GET TOTAL KEYS DOWN, USED TO FILTER SEQUENCE THAT NEED CHECK
 			var len = Object.values(this.map).filter(function(value){
 				return value;
 			}).length;
@@ -140,21 +142,16 @@ var KeyMap = (function(){
 				return false;
 			}
 
-			// CHECK ALL COMBOS CREATED
 			var self = this;
 			for (var i = 0; i < this.onComboKey[len].length; i++){
 				var current = this.onComboKey[len][i];
 				// PASS THE KEYS FROM COMBO TO CHECK IF IS OK WITH THE MAP
 				if(this.checkCombo(current.keys)){
 					if(!current.called){
-						current.callback(e, current.keys);
-						// USED TO NOT CALL AGAIN
+						current.callback.call(e.target, e, current.keys);
 						current.called = true;
-						// USED TO SAY AN EVENT WAS SHOT
-						self.doAction = true;
 						setTimeout(function(){
 							current.called = false;
-							self.doAction = false;
 						}, resetCallAfter*1000);
 						return true;
 					}
@@ -165,8 +162,17 @@ var KeyMap = (function(){
 	}
 
 	var elements = [];
+	
+	// RETURN THE INSTANCE Singleton OF ELEMENT
+	function getInstance (element){
+		var i = elements.map(function(t){return t.element;}).indexOf(element);
+		if(i == -1){
+			return null;
+		}
+		return elements[i];
+	}
 
-	var newKeyObj = {
+	var keyMapObj = {
 		addAlias : function(key, strAlias){
 			if(typeof alias[key] == 'undefined'){
 				alias[key] = [];
@@ -229,9 +235,9 @@ var KeyMap = (function(){
 			}
 
 			// CONVERT combo KEYS TO DEFAULT NUMBER keyCode OR CORRESPONDENT ALIAS.
-			var parser = newKeyObj.parseAlias(combo);
+			var parser = keyMapObj.parseAlias(combo);
 			if(parser == false){
-				return parser;
+				return false;
 			}
 			var _keys = parser.keys;
 			var hasMouseKey = parser.hasMouseKey;
@@ -245,7 +251,6 @@ var KeyMap = (function(){
 				elements.push({
 					element : element,
 					keyMap : new keyMap(),
-					events : [],
 					options : {
 						keyboard : false,
 						mouse : false,
@@ -263,28 +268,6 @@ var KeyMap = (function(){
 				var check = current.keyMap.keyMapEvent(e);
 			}
 
-			// CREATE A FUNCTION IN OBJECT THAT CAN USE TO REMOVE THE LISTENER
-			// var n = current.events.length+1;
-			// current.events.push({
-			// 	combo : _keys,
-				// action : 
-					// CHECK IF EVENT IS KEYBOARD
-					// if(typeof e.keyCode != 'undefined' && !check){
-						// NEED CHECK IF this IS THE LAST LISTENER CALLED, IF NOT THE LAST 
-						// USE e.preventDefault(); TO ENSURE THAT THE CURRENT DOES NOT INTERFERE IN OTHERS
-						// if(n != current.events.length){
-							// e.preventDefault();
-						// }else{
-							// IF IT IS THE LAST, CHECK IF ANYONE HAS BEEN CALLED
-						// 	if(current.keyMap.doAction && e.defaultPrevented()){
-						// 		e.preventDefault();
-						// 	}
-						// }
-					// }
-				// }
-			// });
-			// var action = current.events[current.events.length-1].action;
-
 			if(!current.options.keyboard){
 				current.options.keyboard = true;
 				element.addEventListener('keydown', action);
@@ -299,34 +282,14 @@ var KeyMap = (function(){
 
 			return true;
 		},
-		// RETURN THE INSTANCE Singleton OF ELEMENT
-		getInstance : function(element){
-			var i = elements.map(function(t){return t.element;}).indexOf(element);
-			if(i == -1){
-				return null;
-			}
-			return elements[i];
-		},
 		disableCombo : function(element, combo){
-			var current = this.getInstance(element);
+			var current = getInstance(element);
 			if(current != null){
 				var parser = this.parseAlias(combo);
 				if(!parser){
 					return false;
 				}
-				var i = current.events.map(function(t){return t.combo.toString();}).indexOf(parser.keys.toString());
-				if(i !== -1){
-					// var action = current.events[i].action;
-					// element.removeEventListener('keydown', action);
-					// element.removeEventListener('keyup', action);
-
-					// if(parser.hasMouseKey){
-					// 	element.removeEventListener('mousedown', action);
-					// 	element.removeEventListener('mouseup', action);
-					// }
-
-					return current.keyMap.removeCombo(parser.keys);
-				}
+				return current.keyMap.removeCombo(parser.keys);
 			}
 			return false;
 		}
@@ -334,51 +297,12 @@ var KeyMap = (function(){
 
 	// CREATE A CALLABLE EVENT on, LIKE DEFAULT
 	Object.prototype.onKeyMap = function(combo, callback){
-		return newKeyObj.addEvent(this, combo, callback);
+		return keyMapObj.addEvent(this, combo, callback);
 	}
 
 	Object.prototype.offKeyMap = function(combo){
-		return newKeyObj.disableCombo(this, combo);
+		return keyMapObj.disableCombo(this, combo);
 	}
 
-	return newKeyObj;
+	return keyMapObj;
 }());
-
-window.onload = function(){
-
-	area = document.getElementsByTagName('textarea')[0];
-	form = document.getElementsByTagName('form')[0];
-
-	// area.onKeyMap(['ctrl'], function(e){
-	// 	e.preventDefault();
-	// 	alert('ctrl');
-	// });
-
-	area.onKeyMap(['ctrl', 's'], function(e){
-		e.preventDefault();
-		alert('save');
-	});
-
-	// area.onKeyMap(['ctrl', 'w'], function(e){
-	// 	e.preventDefault();
-	// 	alert('dont close');
-	// });
-
-	area.onKeyMap(['ctrl', 'b'], function(e){
-		e.preventDefault();
-		alert('favorites');
-	});
-
-	// area.onKeyMap(['ctrl', 'mouse_0'], function(e){
-	// 	alert('ctrl+mouse_0');
-	// });
-
-	// area.onKeyMap(['ctrl', 'alt', 'mouse_2'], function(e){
-	// 	e.stopPropagation();
-	// 	alert('ctrl+alt+mouse_2');
-	// });
-
-	// document.onKeyMap('esc', function(e){
-	//  alert('exit page');
-	// });
-}
