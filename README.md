@@ -100,4 +100,4 @@ KeyMap.addEvent(DOMTextArea, 53, function(){
 
 If this project help you reduce time to develop, you can give me a cup of coffee =D
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=5FDRXF4VLYAYS&lc=BR&item_name=Lautert&currency_code=BRL&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=lautert250%40gmail%2ecom&lc=BR&item_name=Lautert&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
